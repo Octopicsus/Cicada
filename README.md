@@ -68,14 +68,22 @@ Full rationale: [`docs/adr/0001-stack-decisions.md`](./docs/adr/0001-stack-decis
 ```bash
 corepack enable
 pnpm install
-pnpm dev          # starts apps/web (Next.js dev server) — Phase 2 onwards
-pnpm typecheck    # full repo type check
-pnpm test         # unit + integration
-pnpm lint         # ESLint + Stylelint
+cp .env.example .env.local   # fill in Supabase / GoCardless creds
+pnpm dev                     # starts apps/web on http://localhost:3000
+pnpm typecheck               # full repo type check
+pnpm test                    # unit + integration
+pnpm lint                    # ESLint
+pnpm stylelint               # CSS Modules
+pnpm format:check            # Prettier
 ```
 
-> Phase 1 (current) only ships the workspace skeleton. `pnpm dev` will be wired
-> when the Next.js app is scaffolded in Phase 2.
+### Optional local tools
+
+- **Gitleaks** (`brew install gitleaks`) — the `pre-commit` hook runs it when
+  installed; otherwise it's silently skipped. CI always runs the full
+  `gitleaks-action` over history.
+- **Supabase local stack** (`pnpm exec supabase start`) — spins up Postgres,
+  Auth, Studio, and friends in Docker. Requires Docker Desktop running.
 
 ## Product principle
 

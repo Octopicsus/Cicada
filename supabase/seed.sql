@@ -1,0 +1,4 @@
+-- Local-development seed data.
+-- Loaded automatically by `supabase db reset`. Keep this file safe to run
+-- repeatedly against an empty schema — never put production-shaped fixtures
+-- here.

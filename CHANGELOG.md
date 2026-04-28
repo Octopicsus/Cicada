@@ -49,10 +49,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pnpm test` — 4/4 passing.
 - `pnpm --filter @cicada/web build` — Next.js production build succeeds.
 
-### Pending — Phase 3 / Supabase + CI
+### Added — Phase 3 / Supabase + CI (2026-04-28)
 
-- `supabase init`, baseline schema migration, `.env.example`
-- GitHub Actions CI (typecheck / lint / unit tests / E2E)
+- Supabase CLI added as a workspace dev dependency (no `brew` required) and
+  `supabase init` ran with project_id `Cicada`. Generated `config.toml` is
+  checked in; `.temp/` is gitignored.
+- Baseline migration `20260428000000_init.sql` — pgcrypto + citext extensions
+  in a dedicated `extensions` schema. Real tables follow as domain models pin
+  down.
+- `.env.example` covering Supabase, GoCardless, Resend, Sentry, PostHog,
+  Upstash. Real values live in `.env.local` (gitignored) and Vercel/Supabase
+  project settings.
+- `@cicada/db` package now real:
+  - `createBrowserClient` (`@supabase/ssr`)
+  - `createServerClient(cookies)` accepting a generic `CookieAdapter`, so the
+    package never imports `next/headers` and stays framework-agnostic
+  - `createAdminClient` (service-role, server-only)
+  - `env.ts` with one helpful exception per missing env var
+  - `types.ts` placeholder for `pnpm gen:types` output
+- GitHub Actions CI (`.github/workflows/ci.yml`):
+  - **verify** — Prettier check, ESLint, Stylelint, `tsc`, Vitest
+  - **build** — Next.js production build with `.next/cache` cached
+  - **secret-scan** — `gitleaks-action` over full history on every push/PR
+
+### Pending — Phase 4 / `@cicada/ui` foundation
 
 ### Pending — Phase 4 / `@cicada/ui` foundation
 
