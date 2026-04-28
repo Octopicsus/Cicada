@@ -1,0 +1,17 @@
+{
+  "name": "@cicada/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Next.js app not yet scaffolded — see Phase 2 in CHANGELOG' && exit 1",
+    "build": "echo 'Next.js app not yet scaffolded — see Phase 2 in CHANGELOG' && exit 1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cicada/db": "workspace:*",
+    "@cicada/domain": "workspace:*",
+    "@cicada/shared": "workspace:*",
+    "@cicada/ui": "workspace:*"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "cicada",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Personal finance SaaS for cross-border families. Monorepo root.",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "pnpm -r --filter \"./apps/*\" --filter \"./packages/*\" build",
+    "dev": "pnpm --filter @cicada/web dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r exec rm -rf dist .next .turbo node_modules/.cache"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
