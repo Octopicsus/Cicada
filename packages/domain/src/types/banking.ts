@@ -86,7 +86,10 @@ export interface BankTransaction {
   readonly accountId: string | null; // null for manual entries
   readonly walletId: string;
 
-  // Money
+  // Money. Adapter: { value: row.amount, currency: row.currency_code }.
+  // DB stores those as separate columns + redundant `direction` enum for
+  // query convenience; the sign of `value` is authoritative (negative=debit,
+  // positive=credit), `direction` is a denormalized echo for indexes.
   readonly amount: Money;
   readonly bookedAt: Date;
   readonly valueAt: Date;
