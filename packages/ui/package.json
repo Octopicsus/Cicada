@@ -7,10 +7,24 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens/index.css",
     "./tokens": "./src/tokens/index.ts",
     "./styles/*": "./src/styles/*"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ladle": "ladle serve",
+    "ladle:build": "ladle build"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@cicada/shared": "workspace:*",
+    "@radix-ui/react-slot": "^1.1.1"
+  },
+  "devDependencies": {
+    "@ladle/react": "^5.0.1"
   }
 }

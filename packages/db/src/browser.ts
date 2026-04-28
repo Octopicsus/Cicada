@@ -1,8 +1,8 @@
 import { createBrowserClient as createSSRBrowserClient } from "@supabase/ssr";
 
-import { getPublicEnv } from "./env.js";
+import { getPublicEnv } from "./env";
 
-import type { Database } from "./types.js";
+import type { Database } from "./types";
 
 /**
  * Supabase client for client-side React components.

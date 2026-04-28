@@ -1,4 +1,4 @@
-export { createBrowserClient } from "./browser.js";
-export { createServerClient, type CookieAdapter } from "./server.js";
-export { createAdminClient } from "./admin.js";
-export type { Database } from "./types.js";
+export { createBrowserClient } from "./browser";
+export { createServerClient, type CookieAdapter } from "./server";
+export { createAdminClient } from "./admin";
+export type { Database } from "./types";

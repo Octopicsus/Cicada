@@ -1,8 +1,8 @@
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 
-import { getPublicEnv } from "./env.js";
+import { getPublicEnv } from "./env";
 
-import type { Database } from "./types.js";
+import type { Database } from "./types";
 
 /**
  * Cookie adapter shape from @supabase/ssr — kept generic here so this package

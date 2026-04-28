@@ -1,0 +1,8 @@
+/*
+ * Single entry point for all design tokens.
+ * Import once at the root layout: `import "@cicada/ui/tokens.css"`.
+ */
+
+@import "./primitive.css";
+@import "./semantic.css";
+@import "./component.css";

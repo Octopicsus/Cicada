@@ -1,0 +1,96 @@
+.root {
+  align-items: center;
+  background: var(--color-accent-default);
+  border: 1px solid transparent;
+  border-radius: var(--cicada-button-radius);
+  color: var(--color-text-on-accent);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--cicada-button-font-weight);
+  gap: var(--cicada-button-gap);
+  justify-content: center;
+  line-height: var(--line-height-tight);
+  text-decoration: none;
+  transition:
+    background var(--motion-duration-fast) var(--motion-easing-standard),
+    color var(--motion-duration-fast) var(--motion-easing-standard),
+    border-color var(--motion-duration-fast) var(--motion-easing-standard);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.root:hover {
+  background: var(--color-accent-hover);
+}
+
+.root:active {
+  background: var(--color-accent-active);
+}
+
+.root:focus-visible {
+  box-shadow: var(--shadow-focus-ring);
+  outline: none;
+}
+
+.root:disabled,
+.root[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ---- Size variants (data-size) ----------------------------------------- */
+.root[data-size="sm"] {
+  height: var(--size-control-sm);
+  padding-block: 0;
+  padding-inline: var(--cicada-button-padding-x-sm);
+}
+
+.root[data-size="md"] {
+  height: var(--size-control-md);
+  padding-block: 0;
+  padding-inline: var(--cicada-button-padding-x-md);
+}
+
+.root[data-size="lg"] {
+  font-size: var(--font-size-base);
+  height: var(--size-control-lg);
+  padding-block: 0;
+  padding-inline: var(--cicada-button-padding-x-lg);
+}
+
+/* ---- Variant (data-variant) -------------------------------------------- */
+.root[data-variant="primary"] {
+  background: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+}
+
+.root[data-variant="secondary"] {
+  background: var(--color-surface-default);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.root[data-variant="secondary"]:hover {
+  background: var(--color-surface-subtle);
+}
+
+.root[data-variant="ghost"] {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.root[data-variant="ghost"]:hover {
+  background: var(--color-surface-subtle);
+}
+
+.root[data-variant="danger"] {
+  background: var(--color-status-danger-fg);
+  color: var(--color-white);
+}
+
+.root[data-variant="danger"]:hover {
+  background: var(--color-danger-9);
+  filter: brightness(0.9);
+}

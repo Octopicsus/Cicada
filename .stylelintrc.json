@@ -19,6 +19,7 @@
       }
     ],
     "no-descending-specificity": null,
+    "import-notation": "string",
     "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global", "local"] }]
   },
   "ignoreFiles": [

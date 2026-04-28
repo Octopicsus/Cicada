@@ -19,11 +19,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".next", "dist"],
-  "references": [
-    { "path": "../../packages/domain" },
-    { "path": "../../packages/db" },
-    { "path": "../../packages/ui" },
-    { "path": "../../packages/shared" }
-  ]
+  "exclude": ["node_modules", ".next", "dist"]
 }

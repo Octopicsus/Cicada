@@ -1,6 +1,6 @@
 /*
- * Global resets only. All design tokens live in @cicada/ui.
- * Real styling arrives with the @cicada/ui foundation in Phase 4.
+ * Tiny app-level reset on top of the @cicada/ui token system.
+ * Token CSS is imported in layout.tsx before this file.
  */
 
 *,
@@ -16,15 +16,12 @@ body {
 }
 
 body {
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  background: var(--color-surface-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
 }
 
 a {

@@ -1,0 +1,46 @@
+/*
+ * Semantic tokens — what components reference. They map to primitives.
+ * If a component needs a colour or a value that isn't here yet, add it
+ * to this file (not to the component's CSS module).
+ *
+ * Dark scheme arrives in a follow-up; for now this is the light surface.
+ */
+
+:where(:root) {
+  /* ---- Surface (backgrounds) ----------------------------------------- */
+  --color-surface-canvas: var(--color-gray-1);
+  --color-surface-default: var(--color-white);
+  --color-surface-subtle: var(--color-gray-2);
+  --color-surface-muted: var(--color-gray-3);
+  --color-surface-inverse: var(--color-gray-12);
+
+  /* ---- Text ---------------------------------------------------------- */
+  --color-text-primary: var(--color-gray-12);
+  --color-text-secondary: var(--color-gray-11);
+  --color-text-tertiary: var(--color-gray-9);
+  --color-text-muted: var(--color-gray-8);
+  --color-text-on-inverse: var(--color-gray-1);
+  --color-text-on-accent: var(--color-gray-1);
+
+  /* ---- Border -------------------------------------------------------- */
+  --color-border-subtle: var(--color-gray-4);
+  --color-border-default: var(--color-gray-6);
+  --color-border-strong: var(--color-gray-8);
+  --color-border-focus: var(--color-gray-12);
+
+  /* ---- Accent (no brand yet → reuses gray scale) --------------------- */
+  --color-accent-default: var(--color-gray-12);
+  --color-accent-hover: var(--color-gray-11);
+  --color-accent-active: var(--color-gray-10);
+
+  /* ---- Status -------------------------------------------------------- */
+  --color-status-danger-bg: var(--color-danger-3);
+  --color-status-danger-fg: var(--color-danger-9);
+  --color-status-success-bg: var(--color-success-3);
+  --color-status-success-fg: var(--color-success-9);
+  --color-status-warning-bg: var(--color-warning-3);
+  --color-status-warning-fg: var(--color-warning-9);
+
+  /* ---- Focus ring ---------------------------------------------------- */
+  --shadow-focus-ring: 0 0 0 2px var(--color-surface-default), 0 0 0 4px var(--color-border-focus);
+}

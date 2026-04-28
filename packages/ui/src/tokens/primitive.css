@@ -1,0 +1,118 @@
+/*
+ * Primitive tokens — raw values that the rest of the system maps to.
+ * Never reference these directly from components. Components reference
+ * semantic.css; semantic.css references this file.
+ *
+ * Naming follows Stylelint's `custom-property-pattern` from .stylelintrc.json:
+ *   `^(cicada|color|space|radius|size|shadow|font|z|motion|breakpoint|line)-...`
+ */
+
+:where(:root) {
+  /* ---- Color: neutral scale ------------------------------------------ */
+  --color-gray-1: #fcfcfc;
+  --color-gray-2: #f7f7f7;
+  --color-gray-3: #f1f1f1;
+  --color-gray-4: #ebebeb;
+  --color-gray-5: #e4e4e4;
+  --color-gray-6: #d4d4d4;
+  --color-gray-7: #bfbfbf;
+  --color-gray-8: #9c9c9c;
+  --color-gray-9: #6f6f6f;
+  --color-gray-10: #5a5a5a;
+  --color-gray-11: #3f3f3f;
+  --color-gray-12: #1a1a1a;
+
+  /* No brand colour yet — Phase 0 deliverable. Until then accents reuse */
+
+  /* gray-12 for max contrast and gray-1 for inverse fills.              */
+
+  --color-white: #fff;
+  --color-black: #000;
+  --color-transparent: rgb(0 0 0 / 0%);
+
+  /* Status colors — generic, will be replaced when brand is decided.   */
+  --color-danger-9: #c92a2a;
+  --color-danger-3: #fff5f5;
+  --color-success-9: #2b8a3e;
+  --color-success-3: #ebfbee;
+  --color-warning-9: #b27800;
+  --color-warning-3: #fff9db;
+
+  /* ---- Spacing scale (4-pt grid) ------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem; /*  4px */
+  --space-2: 0.5rem; /*   8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /*    16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /*    32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /*  48px */
+  --space-16: 4rem; /*  64px */
+  --space-20: 5rem; /*  80px */
+  --space-24: 6rem; /*  96px */
+
+  /* ---- Radii --------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-pill: 9999px;
+
+  /* ---- Typography ---------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", monaco, "Cascadia Code", "Roboto Mono", monospace;
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /*  14px */
+  --font-size-base: 1rem; /*    16px */
+  --font-size-lg: 1.125rem; /*  18px */
+  --font-size-xl: 1.25rem; /*   20px */
+  --font-size-2xl: 1.5rem; /*   24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /*  36px */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* ---- Sizes (component heights, icons) ------------------------------ */
+  --size-icon-sm: 1rem;
+  --size-icon-md: 1.25rem;
+  --size-icon-lg: 1.5rem;
+  --size-control-sm: 1.75rem; /* 28px */
+  --size-control-md: 2.25rem; /* 36px */
+  --size-control-lg: 2.75rem; /* 44px */
+
+  /* ---- Shadows ------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 6%);
+  --shadow-md: 0 2px 8px rgb(0 0 0 / 8%);
+  --shadow-lg: 0 8px 24px rgb(0 0 0 / 10%);
+
+  /* ---- z-index ------------------------------------------------------- */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-overlay: 1000;
+  --z-modal: 1100;
+  --z-popover: 1200;
+  --z-toast: 1300;
+
+  /* ---- Motion -------------------------------------------------------- */
+  --motion-duration-instant: 100ms;
+  --motion-duration-fast: 160ms;
+  --motion-duration-normal: 240ms;
+  --motion-duration-slow: 360ms;
+  --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-easing-emphasized: cubic-bezier(0.3, 0, 0, 1);
+
+  /* ---- Breakpoints (CSS-side reference; JS-side mirror in tokens.ts) - */
+  --breakpoint-sm: 40rem; /* 640px */
+  --breakpoint-md: 48rem; /* 768px */
+  --breakpoint-lg: 64rem; /* 1024px */
+  --breakpoint-xl: 80rem; /* 1280px */
+}

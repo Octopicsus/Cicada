@@ -24,6 +24,7 @@ export default tseslint.config(
       "**/build/**",
       "**/coverage/**",
       "**/.turbo/**",
+      "**/.ladle/**",
       "**/*.min.js",
       "apps/web/next-env.d.ts",
     ],

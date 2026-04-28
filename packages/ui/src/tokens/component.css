@@ -1,0 +1,18 @@
+/*
+ * Component-level tokens. Use sparingly — only for values genuinely
+ * shared across multiple components (e.g. control heights, button paddings).
+ * One-off values belong in the component's own CSS module.
+ *
+ * Naming convention: `--cicada-<component>-<role>` so it's obvious at the
+ * call-site that the value is component-specific and lives in this layer.
+ */
+
+:where(:root) {
+  /* ---- Buttons ------------------------------------------------------- */
+  --cicada-button-radius: var(--radius-md);
+  --cicada-button-font-weight: var(--font-weight-medium);
+  --cicada-button-padding-x-sm: var(--space-3);
+  --cicada-button-padding-x-md: var(--space-4);
+  --cicada-button-padding-x-lg: var(--space-5);
+  --cicada-button-gap: var(--space-2);
+}

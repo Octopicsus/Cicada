@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { getPublicEnv, getServiceRoleKey } from "./env.js";
+import { getPublicEnv, getServiceRoleKey } from "./env";
 
-import type { Database } from "./types.js";
+import type { Database } from "./types";
 
 /**
  * Service-role client. Bypasses RLS — use only in trusted server contexts

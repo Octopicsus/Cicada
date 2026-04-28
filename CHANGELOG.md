@@ -72,10 +72,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **build** — Next.js production build with `.next/cache` cached
   - **secret-scan** — `gitleaks-action` over full history on every push/PR
 
-### Pending — Phase 4 / `@cicada/ui` foundation
+### Added — Phase 4 / `@cicada/ui` foundation (2026-04-28)
 
-### Pending — Phase 4 / `@cicada/ui` foundation
+- **Three-layer token system** under `@cicada/ui`:
+  - `primitive.css` — raw scales (gray 1–12, status colours, 4-pt space scale,
+    radii, font sizes/weights/line-heights, control sizes, shadows, motion,
+    z-index, breakpoints).
+  - `semantic.css` — `surface-*`, `text-*`, `border-*`, `accent-*`, status,
+    focus-ring. Components only reference this layer.
+  - `component.css` — sparingly used component-level tokens
+    (`--cicada-button-*`). Naming locked to `--cicada-<component>-<role>` so
+    it's clear at the call-site that the value belongs to this layer.
+  - `index.css` aggregates all three; consumed via `@cicada/ui/tokens.css`.
+  - `index.ts` mirrors a few values that need to be read from JS
+    (`breakpoints`, `motionDuration`).
+- **Stylelint** updated: `import-notation: "string"` (matches our `@import "..."`
+  convention), `custom-property-pattern` enforces the namespace prefix on every
+  `--*` declaration.
+- **Button primitive** — first real component:
+  - Radix `Slot` for `asChild` so it composes with `next/link` and any other
+    element while keeping styling.
+  - CSS Modules + `data-variant` / `data-size` attribute variants (no
+    CSS-in-JS, no class concatenation in templates).
+  - `forwardRef`, `type="button"` default to avoid stray form submits.
+  - 6 RTL tests cover render, default attrs, custom variant/size, click,
+    `asChild` composition.
+  - 5 Ladle stories (`Default`, `AllVariants`, `AllSizes`, `Disabled`,
+    `AsChildLink`).
+- **Ladle** wired up — `pnpm --filter @cicada/ui ladle` serves the gallery on
+  `:61000`. `.ladle/components.tsx` imports `tokens.css` once for all stories.
+- **`apps/web` consumes `@cicada/ui`**:
+  - `src/app/layout.tsx` imports `@cicada/ui/tokens.css` at the root.
+  - `src/app/page.tsx` renders three Button variants on top of token-driven
+    layout values.
+- **Cleanup along the way:**
+  - Dropped `.js` extensions from cross-file TS imports — Next 16/Turbopack
+    rejects them; `moduleResolution: "Bundler"` makes them unnecessary anyway.
+  - Removed TypeScript project references from `apps/web/tsconfig.json`
+    (TS 6305 with `composite` libs and no build step). Resolution now goes
+    through package.json `main` directly.
 
-- 3-layer token system (primitive → semantic → component)
-- Ladle setup
-- First primitive components on top of Radix
+### Verified — end of Phase 4
+
+- `pnpm typecheck`, `pnpm lint`, `pnpm stylelint`, `pnpm format:check` —
+  all clean.
+- `pnpm test` — 10/10 (`cn` ×4, `Button` ×6).
+- `pnpm --filter @cicada/web build` — Next.js 16.2.4 production build OK.
+
+> Frontend smoke note: home page was verified via the production build only —
+> the dev server was not opened in a browser this session. Visual review is
+> the next thing to do before declaring Phase 0 closed.
