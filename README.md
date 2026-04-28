@@ -40,7 +40,7 @@ cicada/
 
 ## Stack
 
-- **Frontend:** Next.js 15 (App Router, RSC-first), TypeScript strict, Turbopack
+- **Frontend:** Next.js 16 (App Router, RSC-first), TypeScript strict, Turbopack
 - **Styling:** CSS Modules + 3-layer token system (primitive → semantic → component). No CSS-in-JS.
 - **State:** TanStack Query (server) · Zustand (UI) · nuqs (URL)
 - **Forms:** React Hook Form + Zod

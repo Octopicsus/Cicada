@@ -1,0 +1,131 @@
+// @ts-check
+import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
+import importPlugin from "eslint-plugin-import";
+import reactHooks from "eslint-plugin-react-hooks";
+import tseslint from "typescript-eslint";
+
+/**
+ * Flat ESLint config for the Cicada monorepo.
+ *
+ * Notes:
+ * - Next.js–specific rules are intentionally NOT pulled in here. Next 16 ships
+ *   its own ESLint integration via `next lint` and we keep the surface area
+ *   small. Add per-app overrides under `apps/web/` if needed.
+ * - Type-aware rules use `projectService` so we don't have to enumerate every
+ *   tsconfig in the monorepo.
+ */
+export default tseslint.config(
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/.turbo/**",
+      "**/*.min.js",
+      "apps/web/next-env.d.ts",
+    ],
+  },
+
+  js.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
+
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      import: importPlugin,
+    },
+    rules: {
+      // Hooks
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+
+      // Imports
+      "import/order": [
+        "warn",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "object",
+            "type",
+          ],
+          "newlines-between": "always",
+          alphabetize: { order: "asc", caseInsensitive: true },
+          pathGroups: [
+            {
+              pattern: "@cicada/**",
+              group: "internal",
+              position: "before",
+            },
+            { pattern: "@/**", group: "internal", position: "after" },
+          ],
+          pathGroupsExcludedImportTypes: ["builtin"],
+        },
+      ],
+      "import/no-default-export": "off",
+
+      // TS — relax some defaults that are too noisy for app code
+      "@typescript-eslint/consistent-type-imports": [
+        "warn",
+        { prefer: "type-imports", fixStyle: "separate-type-imports" },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+
+  // Tests — type-aware checks off; we trust the test runner's strictness
+  {
+    files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "**/__tests__/**"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
+
+  // Config / setup files anywhere — sit outside the TS project graph,
+  // so we run them without type-aware rules.
+  {
+    files: [
+      "*.{js,mjs,cjs}",
+      "*.config.{js,mjs,cjs,ts,mts}",
+      "**/*.config.{js,mjs,cjs,ts,mts}",
+      "**/vitest.{config,setup,workspace}.{ts,mts}",
+      "vitest.workspace.{ts,mts}",
+      "commitlint.config.{js,mjs,cjs}",
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: null,
+      },
+    },
+    ...tseslint.configs.disableTypeChecked,
+  },
+
+  // Always last — disables stylistic rules that conflict with Prettier
+  prettier,
+);

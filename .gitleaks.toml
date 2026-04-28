@@ -1,0 +1,17 @@
+# Inherit Gitleaks default ruleset; only add project-specific allowlists.
+# Default rules cover AWS, GCP, Stripe, JWT, generic API keys, etc.
+# Run locally:  gitleaks protect --staged --redact
+# Run on history: gitleaks detect --redact
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Files and paths that are safe to ignore"
+paths = [
+  '''(.*?)\.lock$''',
+  '''(.*?)\.snap$''',
+  '''pnpm-lock\.yaml''',
+  '''CHANGELOG\.md''',
+  '''docs/adr/.*\.md''',
+]

@@ -1,6 +1,33 @@
 # @cicada/web
 
-Next.js 15 application — UI + Route Handlers (`app/api/*/route.ts`).
+Next.js 16 application — UI + Route Handlers (`src/app/api/*/route.ts`).
 
-> **Status:** placeholder. Will be scaffolded via `pnpm create next-app` in Phase 2.
-> See the root [CHANGELOG](../../CHANGELOG.md) for the current phase.
+## Scripts
+
+```bash
+pnpm dev          # Next dev server (Turbopack)
+pnpm build        # Production build
+pnpm start        # Production server
+pnpm typecheck    # tsc --noEmit
+pnpm lint         # ESLint
+pnpm stylelint    # Stylelint over CSS Modules
+pnpm test         # Vitest (unit + integration)
+```
+
+## Layout
+
+```
+src/
+├── app/                     # App Router (pages, layouts, route handlers)
+└── ...                      # styles, lib, hooks added as we go
+```
+
+## Notes
+
+- **Strict TypeScript.** Inherits the repo-wide settings from
+  [`tsconfig.base.json`](../../tsconfig.base.json) — `noUncheckedIndexedAccess`,
+  `exactOptionalPropertyTypes`, etc. Your editor will scream more than usual; that's the point.
+- **Workspace imports.** Use `@cicada/domain`, `@cicada/db`, `@cicada/ui`, `@cicada/shared`.
+  Local imports use `@/*` (configured in `tsconfig.json`).
+- **No Tailwind.** Styling is CSS Modules + design tokens from `@cicada/ui`. See
+  [ADR 0001](../../docs/adr/0001-stack-decisions.md).

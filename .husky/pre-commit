@@ -1,0 +1,10 @@
+pnpm exec lint-staged
+
+# Optional secret scan — only runs if gitleaks is installed locally.
+# Install:  brew install gitleaks  (macOS)  /  see https://github.com/gitleaks/gitleaks
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --no-banner
+else
+  echo "[husky] gitleaks not found in PATH — skipping secret scan."
+  echo "        Install with: brew install gitleaks"
+fi

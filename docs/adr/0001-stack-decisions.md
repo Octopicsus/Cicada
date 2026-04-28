@@ -31,8 +31,14 @@ Constraints driving the stack choice:
 
 ### Frontend
 
-- **Framework:** Next.js 15 (App Router, RSC-first with client islands).
-- **Build:** Turbopack (stable in Next 15).
+- **Framework:** Next.js 16 (App Router, RSC-first with client islands).
+  Originally pinned at Next 15 in Session 1 (2026-04-24); updated 2026-04-28
+  when scaffolding via `create-next-app` resolved to 16.2.4 — the latest
+  stable release. Migration cost from 15 → 16 was zero on day one (no code
+  to migrate yet); App Router semantics carry forward. The repo's
+  `apps/web/AGENTS.md` flags that some 16.x APIs differ from 15 — to be
+  consulted when writing new code.
+- **Build:** Turbopack (stable, default in Next 16).
 - **Language:** TypeScript with `strict`, `noUncheckedIndexedAccess`,
   `exactOptionalPropertyTypes`.
 - **Styling:** CSS Modules + CSS Custom Properties. Three layers of design

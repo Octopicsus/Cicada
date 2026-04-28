@@ -2,16 +2,31 @@
   "name": "@cicada/web",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "echo 'Next.js app not yet scaffolded — see Phase 2 in CHANGELOG' && exit 1",
-    "build": "echo 'Next.js app not yet scaffolded — see Phase 2 in CHANGELOG' && exit 1",
-    "typecheck": "tsc --noEmit"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "stylelint": "stylelint \"src/**/*.{css,module.css}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@cicada/db": "workspace:*",
     "@cicada/domain": "workspace:*",
     "@cicada/shared": "workspace:*",
-    "@cicada/ui": "workspace:*"
+    "@cicada/ui": "workspace:*",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.6.3"
   }
 }
