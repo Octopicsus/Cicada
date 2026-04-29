@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Verified — Phase 0 / Foundation closure (2026-04-29)
+
+- Web smoke at http://localhost:3000 — home page renders three
+  Button variants (Primary, Secondary, Ghost); console clean
+  (only `[HMR] connected`).
+- Ladle smoke at http://localhost:61000 — Components → Button
+  gallery exposes 5 stories (All sizes / All variants / As child link
+  / Default / Disabled). "All variants" renders Primary, Secondary,
+  Ghost, Danger. Console clean.
+- Phase 0 / Foundation marked closed. Next track (Phase 1 component
+  batch) gated by Brand Design lockout until 2026-05-05.
+
 ### Added — Phase 1 / Foundation skeleton (2026-04-28)
 
 - pnpm workspace scaffold (`apps/web`, `packages/{domain,db,ui,shared}`)
