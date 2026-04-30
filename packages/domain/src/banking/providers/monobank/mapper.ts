@@ -88,10 +88,15 @@ export function mapMonoAccount(raw: MonoAccount): MappedAccountFromProvider {
   const namePart = raw.maskedPan?.[0] ?? "";
   const accountName = namePart ? `${raw.type} ${namePart}` : raw.type;
 
+  // Card-shaped Mono types. `madeInUkraine` and `eAid` are program-
+  // specific cards (Зроблено в Україні / е-Допомога) but functionally
+  // identical to the regular card lineup. Anything outside this list
+  // (and non-fop) falls through to "other" — covers genuinely new
+  // future Mono types without crashing.
   const accountType: AccountType =
     raw.type === "fop"
       ? "current"
-      : ["black", "white", "platinum", "iron", "yellow"].includes(raw.type)
+      : ["black", "white", "platinum", "iron", "yellow", "madeInUkraine", "eAid"].includes(raw.type)
         ? "card"
         : "other";
 
