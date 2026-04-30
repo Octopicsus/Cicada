@@ -19,12 +19,13 @@ import { MonobankProvider } from "../index";
  *
  * Exit code convention:
  *   0 — validateCredentials() returned Result.ok(ClientInfo)
- *   1 — usage error (MONOBANK_TOKEN env var missing, или uncaught runtime exception)
+ *   1 — usage error (MONOBANK_TOKEN env var missing)
  *   2 — adapter validation failed (Result.err с валидным ProviderError, например kind: 'invalid_credentials')
+ *   3 — uncaught runtime exception (network failure до ProviderError mapping, или bug в самом скрипте)
  *
  * Used in CI / manual triage чтобы отличать "ты запустил меня неправильно" (1)
- * от "Mono отверг токен" (2). Не унифицировать в exit 1 без явного решения —
- * convention намеренная.
+ * от "Mono отверг токен" (2) от "что-то сломалось до того как мы получили ответ" (3).
+ * Не унифицировать без явного решения — convention намеренная.
  */
 async function main(): Promise<void> {
   const token = process.env.MONOBANK_TOKEN;
