@@ -1,3 +1,5 @@
+import { MonobankProvider } from "../providers/monobank";
+
 import type { BankingProvider } from "./provider";
 import type { ProviderKey } from "../../types/banking";
 
@@ -10,7 +12,7 @@ import type { ProviderKey } from "../../types/banking";
  * thrown programmer error, not a silent fallback.
  */
 const REGISTRY: Partial<Record<ProviderKey, BankingProvider>> = {
-  // monobank:   wired in the next commit (Phase 1 — first real adapter)
+  monobank: new MonobankProvider(),
   // gocardless: TBD — adapter scaffold lives in providers/gocardless/.gitkeep
   // salt_edge:  TBD — pending Salt Edge Partner Program access
 };
