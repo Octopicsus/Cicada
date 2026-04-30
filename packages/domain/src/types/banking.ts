@@ -167,16 +167,24 @@ export interface BankConnection {
 }
 
 /**
- * Bank account — concrete account inside a connection (Revolut →
- * CZK + EUR + GBP yields three records). `balance` is a snapshot from
- * the last sync, not authoritative for in-flight queries.
+ * Bank account — concrete account, either provider-sourced (Revolut →
+ * CZK + EUR + GBP yields three records) or manual (cash, foreign accounts
+ * without an integration).
+ *
+ * `connectionId` / `externalId` are nullable: NULL on both means a manual
+ * account; both populated means a provider-sourced one. The pair has a
+ * partial unique index (`accounts_connected_unique`) that enforces no
+ * duplicate (connection, external) pair.
+ *
+ * `balance` is a snapshot from the last sync (or last manual edit),
+ * not authoritative for in-flight queries.
  */
 export interface BankAccount {
   readonly id: string;
-  readonly connectionId: string;
+  readonly connectionId: string | null;
   readonly walletId: string;
 
-  readonly externalId: string;
+  readonly externalId: string | null;
   readonly iban: string | null;
   readonly accountName: string | null;
   readonly accountType: string | null;
@@ -289,15 +297,38 @@ export type ProviderCredentials =
   | { readonly kind: "oauth"; readonly code: string; readonly codeVerifier?: string };
 
 /**
+ * Provider-shaped account record returned alongside `ClientInfo`.
+ *
+ * Adapters that surface accounts inline (Monobank's `/personal/client-info`)
+ * populate this shape; the persistence layer then assigns `walletId` /
+ * `connectionId` and persists the result as a `BankAccount` row.
+ *
+ * Fields outside the adapter's control (`id` for our internal UUID,
+ * `walletId`, `connectionId`, `createdAt`, `updatedAt`) are stripped —
+ * a `MappedAccountFromProvider` is intentionally NOT a `BankAccount` so
+ * the type system catches accidental persistence of an unfilled record.
+ */
+export type MappedAccountFromProvider = Omit<
+  BankAccount,
+  "id" | "connectionId" | "walletId" | "createdAt" | "updatedAt"
+>;
+
+/**
  * What `validateCredentials()` returns when the provider acknowledges
  * the credentials. `externalUserId` is provider-namespaced and never
  * leaks across providers; we use it for de-duplicating multiple
  * attempts to connect the same upstream account.
+ *
+ * `accounts` is populated by providers that surface them inline (Mono);
+ * other providers leave it `undefined` and the caller fetches accounts
+ * via `BankingProvider.listAccounts(connectionId)` after a connection
+ * is established.
  */
 export interface ClientInfo {
   readonly providerKey: ProviderKey;
   readonly externalUserId: string;
   readonly displayName?: string;
   readonly defaultCurrency?: ISOCurrency;
+  readonly accounts?: readonly MappedAccountFromProvider[];
   readonly raw?: unknown;
 }
