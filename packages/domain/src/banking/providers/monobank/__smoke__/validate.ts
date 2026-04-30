@@ -9,18 +9,23 @@
  * Token is read from the `MONOBANK_TOKEN` env variable. NEVER hardcode
  * a token in this file. Output redacts the token; only `clientId`,
  * `name`, and `defaultCurrency` are printed.
- *
- * Phase 1 acceptance:
- *   - Real token  → exit 0 with a JSON line containing externalUserId.
- *   - Bad token   → exit 2 with `{ kind: "invalid_credentials", ... }`.
- *   - Rate limit  → exit 2 with `{ kind: "rate_limited", ... }`. Wait
- *                   60 seconds and re-run.
- *   - Mono down   → exit 2 with `{ kind: "institution_down", ... }`.
  */
 import { Result } from "@cicada/shared";
 
 import { MonobankProvider } from "../index";
 
+/**
+ * Smoke validator для MonobankProvider.validateCredentials().
+ *
+ * Exit code convention:
+ *   0 — validateCredentials() returned Result.ok(ClientInfo)
+ *   1 — usage error (MONOBANK_TOKEN env var missing, или uncaught runtime exception)
+ *   2 — adapter validation failed (Result.err с валидным ProviderError, например kind: 'invalid_credentials')
+ *
+ * Used in CI / manual triage чтобы отличать "ты запустил меня неправильно" (1)
+ * от "Mono отверг токен" (2). Не унифицировать в exit 1 без явного решения —
+ * convention намеренная.
+ */
 async function main(): Promise<void> {
   const token = process.env.MONOBANK_TOKEN;
   if (!token) {
