@@ -3,17 +3,17 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
-      bank_accounts: {
+      accounts: {
         Row: {
           account_name: string | null;
           account_type: string | null;
           archived_at: string | null;
           balance_amount: number | null;
           balance_at: string | null;
-          connection_id: string;
+          connection_id: string | null;
           created_at: string;
           currency_code: string;
-          external_id: string;
+          external_id: string | null;
           iban: string | null;
           id: string;
           updated_at: string;
@@ -25,10 +25,10 @@ export type Database = {
           archived_at?: string | null;
           balance_amount?: number | null;
           balance_at?: string | null;
-          connection_id: string;
+          connection_id?: string | null;
           created_at?: string;
           currency_code: string;
-          external_id: string;
+          external_id?: string | null;
           iban?: string | null;
           id?: string;
           updated_at?: string;
@@ -40,10 +40,10 @@ export type Database = {
           archived_at?: string | null;
           balance_amount?: number | null;
           balance_at?: string | null;
-          connection_id?: string;
+          connection_id?: string | null;
           created_at?: string;
           currency_code?: string;
-          external_id?: string;
+          external_id?: string | null;
           iban?: string | null;
           id?: string;
           updated_at?: string;
@@ -469,7 +469,7 @@ export type Database = {
             foreignKeyName: "sync_state_account_id_fkey";
             columns: ["account_id"];
             isOneToOne: false;
-            referencedRelation: "bank_accounts";
+            referencedRelation: "accounts";
             referencedColumns: ["id"];
           },
           {
@@ -587,7 +587,7 @@ export type Database = {
             foreignKeyName: "transactions_account_id_fkey";
             columns: ["account_id"];
             isOneToOne: false;
-            referencedRelation: "bank_accounts";
+            referencedRelation: "accounts";
             referencedColumns: ["id"];
           },
           {
