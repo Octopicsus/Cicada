@@ -1,0 +1,34 @@
+{
+  // Force VS Code's TypeScript server to use the workspace version
+  // (node_modules/typescript) instead of the bundled one. Required for the
+  // monorepo: the bundled tsserver doesn't always pick up workspace-local
+  // @types packages, surfacing fake `Cannot find name 'process'` errors on
+  // files that compile cleanly via `pnpm typecheck`.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Make the editor honor the same Prettier/ESLint pipeline pre-commit uses.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // CSS Modules / Stylelint integration (we run stylelint in CI; this plugs
+  // it into the editor).
+  "css.validate": false,
+  "stylelint.validate": ["css", "postcss"],
+
+  // Prevent VS Code from suggesting unnecessary auto-imports across packages
+  // when the explicit one is already in scope.
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+
+  // Don't show node_modules in the file tree (faster Cmd+P, less noise).
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/dist": true,
+    "**/.tsbuildinfo": true
+  }
+}
