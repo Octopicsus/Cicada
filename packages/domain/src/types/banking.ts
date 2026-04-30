@@ -1,11 +1,18 @@
-import type { ISOCurrency, Money } from "./money";
+import type { ISOCountry, ISOCurrency, Money } from "./money";
+
+// Re-export so banking-related callers don't need a second import line for
+// the primitives that show up everywhere in this module's signatures.
+export type { ISOCountry, ISOCurrency, Money };
 
 /**
  * Banking provider key — only providers whose adapters live in this repo.
  * Whether a given user has access to a provider is a runtime concern
  * (env flags, institution registry), not a type-system concern.
+ *
+ * Folder names under `banking/providers/` mirror this union 1:1 so a
+ * trivial `providers[key]` lookup works without a mapping table.
  */
-export type ProviderKey = "gocardless" | "salt_edge";
+export type ProviderKey = "monobank" | "gocardless" | "salt_edge";
 
 /**
  * Transaction direction. `debit` = money out (expense), `credit` = money in.
@@ -203,3 +210,94 @@ export type SyncState =
       readonly message: string;
       readonly retryable: boolean;
     };
+
+// ---------------------------------------------------------------------------
+// Provider-abstraction surface (added 2026-04-30 alongside `banking/core/`).
+// These types describe the interface adapters expose; existing types above
+// describe what we persist. Adapter mappers translate between the two.
+// ---------------------------------------------------------------------------
+
+/**
+ * Institution — a bank as exposed by a provider. The `id` is namespaced
+ * with the provider key so a registry lookup can route a connection
+ * attempt to the right adapter without ambiguity (e.g. "monobank:UA",
+ * "gocardless:REVOLUT_REVOLT21").
+ */
+export interface Institution {
+  readonly id: string;
+  readonly providerKey: ProviderKey;
+  readonly name: string;
+  readonly country: ISOCountry;
+  readonly logoUrl?: string;
+}
+
+/**
+ * Narrow taxonomy of bank-account types. The persisted `BankAccount`
+ * (above) keeps `accountType` as `string | null` to match the DB column
+ * and tolerate provider strings we haven't normalized yet; adapters
+ * SHOULD project provider values onto this union when known.
+ */
+export type AccountType = "current" | "savings" | "card" | "other";
+
+/**
+ * Balance snapshot returned by a provider at a point in time. Persisted
+ * as `BankAccount.balance: Money | null` + `balanceAt: Date | null` for
+ * now; this type is the wire shape between adapter and the rest of the
+ * system.
+ */
+export interface Balance {
+  readonly amount: Money;
+  readonly asOf: Date;
+}
+
+/**
+ * Inputs to start a PSD2-style consent flow. `redirectUrl` is where the
+ * provider sends the user back after granting consent; `locale` is a
+ * BCP-47 hint for the provider's hosted UI.
+ */
+export interface StartConnectionInput {
+  readonly userId: string;
+  readonly institutionId: string; // namespaced (`<providerKey>:<bankId>`)
+  readonly redirectUrl: string;
+  readonly locale?: string;
+}
+
+/**
+ * In-flight connection attempt — handed to the user-facing redirect.
+ * `externalRef` holds the provider's own attempt id (requisition_id
+ * for GoCardless, login id for Salt Edge). For token-paste providers
+ * like Monobank `redirectUrl` is moot; that adapter signals the
+ * limitation by returning `unknown` from `startConnection`.
+ */
+export interface ConnectionAttempt {
+  readonly attemptId: string;
+  readonly providerKey: ProviderKey;
+  readonly redirectUrl: string;
+  readonly externalRef?: string;
+  readonly expiresAt?: Date;
+}
+
+/**
+ * Provider credentials — shape varies by auth model:
+ * - `token`   — long-lived API token pasted by the user (Monobank).
+ * - `oauth`   — short-lived auth code from a PSD2 callback, optionally
+ *               with a PKCE verifier.
+ * Adapters that don't accept a given kind return `invalid_credentials`.
+ */
+export type ProviderCredentials =
+  | { readonly kind: "token"; readonly token: string }
+  | { readonly kind: "oauth"; readonly code: string; readonly codeVerifier?: string };
+
+/**
+ * What `validateCredentials()` returns when the provider acknowledges
+ * the credentials. `externalUserId` is provider-namespaced and never
+ * leaks across providers; we use it for de-duplicating multiple
+ * attempts to connect the same upstream account.
+ */
+export interface ClientInfo {
+  readonly providerKey: ProviderKey;
+  readonly externalUserId: string;
+  readonly displayName?: string;
+  readonly defaultCurrency?: ISOCurrency;
+  readonly raw?: unknown;
+}

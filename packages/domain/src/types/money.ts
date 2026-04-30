@@ -25,7 +25,15 @@ export interface Money {
  * for Hungary, RON for Romania, etc.) extend this array in the same
  * commit as the regional rollout.
  */
-export const ISO_CURRENCIES = ["CZK", "EUR", "USD", "GBP", "PLN", "CHF"] as const;
+export const ISO_CURRENCIES = [
+  "CZK",
+  "EUR",
+  "USD",
+  "GBP",
+  "PLN",
+  "CHF",
+  "UAH", // 2026-04-30: Monobank — primary currency for UA users
+] as const;
 
 export type ISOCurrency = (typeof ISO_CURRENCIES)[number];
 
@@ -35,4 +43,20 @@ export type ISOCurrency = (typeof ISO_CURRENCIES)[number];
  */
 export function isISOCurrency(code: string): code is ISOCurrency {
   return (ISO_CURRENCIES as readonly string[]).includes(code);
+}
+
+/**
+ * ISO 3166-1 alpha-2 country codes supported at MVP. Used by banking
+ * providers' `supportedCountries` capability and by region-aware
+ * business logic (categorization patterns, institution lookup).
+ *
+ * Open: extend per market. UA + the EU subset where our target users
+ * actually bank — extend in the same commit as the regional rollout.
+ */
+export const ISO_COUNTRIES = ["UA", "CZ", "DE", "PL", "GB", "FR", "CH"] as const;
+
+export type ISOCountry = (typeof ISO_COUNTRIES)[number];
+
+export function isISOCountry(code: string): code is ISOCountry {
+  return (ISO_COUNTRIES as readonly string[]).includes(code);
 }
