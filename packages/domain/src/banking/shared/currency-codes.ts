@@ -1,6 +1,22 @@
 import { isISOCurrency, type ISOCurrency } from "../../types/money";
 
 /**
+ * Thrown by `currencyFromNumeric` when the provider hands us a numeric
+ * code we either don't recognize or haven't yet added to
+ * `ISO_CURRENCIES`. Caught at the adapter boundary — typically the
+ * adapter logs and skips the affected account rather than failing the
+ * whole batch.
+ */
+export class UnsupportedCurrencyError extends Error {
+  readonly numeric: number;
+  constructor(numeric: number) {
+    super(`Unsupported ISO 4217 currency: ${String(numeric)}`);
+    this.name = "UnsupportedCurrencyError";
+    this.numeric = numeric;
+  }
+}
+
+/**
  * ISO 4217 numeric → alpha-3 conversion.
  *
  * Some providers (Monobank, a few Salt Edge endpoints) hand us numeric
@@ -29,13 +45,8 @@ const ALPHA_TO_NUMERIC: Readonly<Record<string, number>> = Object.fromEntries(
 
 export function currencyFromNumeric(numeric: number): ISOCurrency {
   const alpha = NUMERIC_TO_ALPHA[numeric];
-  if (!alpha) {
-    throw new Error(`Unknown ISO 4217 numeric currency code: ${String(numeric)}`);
-  }
-  if (!isISOCurrency(alpha)) {
-    throw new Error(
-      `Currency ${alpha} (numeric ${String(numeric)}) is not in ISO_CURRENCIES — extend the union before mapping it.`,
-    );
+  if (!alpha || !isISOCurrency(alpha)) {
+    throw new UnsupportedCurrencyError(numeric);
   }
   return alpha;
 }
