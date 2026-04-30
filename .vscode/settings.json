@@ -4,8 +4,13 @@
   // monorepo: the bundled tsserver doesn't always pick up workspace-local
   // @types packages, surfacing fake `Cannot find name 'process'` errors on
   // files that compile cleanly via `pnpm typecheck`.
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
+  //
+  // VS Code 2026.x renamed the TS-only keys to the unified `js/ts.*`
+  // namespace; the old `typescript.tsdk` / `typescript.enablePromptUseWorkspaceTsdk`
+  // / `typescript.preferences.includePackageJsonAutoImports` keys still
+  // work but the editor flags them as deprecated.
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
 
   // Make the editor honor the same Prettier/ESLint pipeline pre-commit uses.
   "editor.formatOnSave": true,
@@ -21,7 +26,7 @@
 
   // Prevent VS Code from suggesting unnecessary auto-imports across packages
   // when the explicit one is already in scope.
-  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "js/ts.preferences.includePackageJsonAutoImports": "auto",
 
   // Don't show node_modules in the file tree (faster Cmd+P, less noise).
   "files.exclude": {
