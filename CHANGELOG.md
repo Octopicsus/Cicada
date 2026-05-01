@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preemptive foundation для non-2-decimal currencies. Existing call sites
   не рефакторены, supported set без изменений (CZK/EUR/USD/GBP/PLN/CHF/UAH).
   Tech Debt Backlog P1 #5.
+- `BankingProvider.healthCheck()` method added to interface, implemented
+  for Monobank provider. Lightweight HEAD request to `api.monobank.ua`
+  root with 5s timeout, no credentials required. Status mapping:
+  HTTP < 500 → `up`, 5xx → `degraded`, network error / timeout → `down`.
+  Foundation for future monitoring, retry strategy, and admin status
+  page; not yet wired into UI or scheduled tasks.
+  Tech Debt Backlog P1 #9.
 
 ### Documented
 

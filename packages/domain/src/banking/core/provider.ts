@@ -8,6 +8,7 @@ import type {
   BankTransaction,
   ClientInfo,
   ConnectionAttempt,
+  HealthStatus,
   Institution,
   ISOCountry,
   ProviderCredentials,
@@ -82,4 +83,25 @@ export interface BankingProvider {
 
   // -- Self-description ------------------------------------------------
   getCapabilities(): ProviderCapabilities;
+
+  // -- Reachability ----------------------------------------------------
+  /**
+   * Lightweight reachability check for the provider's public API. Does
+   * not require credentials; meant for monitoring, operational tooling,
+   * and retry-strategy decisions ("the upstream is down — defer this
+   * sync"). Never persists — see `HealthStatus`.
+   *
+   * Implementations SHOULD use a cheap endpoint (HEAD on the API root)
+   * and a short timeout (~5s). They MUST NOT hit credential-protected
+   * paths (would pollute auth logs with 401s) or rate-limited resource
+   * paths (would burn the user's quota for diagnostics).
+   *
+   * Returns a `Result.ok(HealthStatus)` for every observable outcome —
+   * reachable (`up`), responding-with-5xx (`degraded`), and network /
+   * timeout failures (`down`). The `status` field carries the nuance.
+   * `Result.err` is reserved for adapters whose health-check endpoint
+   * has its own auth or quota model and can fail in a structured way
+   * that doesn't fit the three-state status enum.
+   */
+  healthCheck(): Promise<Result<HealthStatus, ProviderError>>;
 }

@@ -13,6 +13,7 @@ import type {
   BankTransaction,
   ClientInfo,
   ConnectionAttempt,
+  HealthStatus,
   Institution,
   ISOCountry,
   ProviderCredentials,
@@ -43,6 +44,33 @@ export class MonobankProvider implements BankingProvider {
 
   getCapabilities(): ProviderCapabilities {
     return monobankCapabilities;
+  }
+
+  /**
+   * HEAD https://api.monobank.ua/ with a 5s timeout. We don't hit
+   * `/personal/client-info` here — that path requires a token and would
+   * pollute Mono's auth logs with 401s during normal monitoring. We
+   * also avoid `/bank/currency` because it has a hard 1/min rate limit
+   * that diagnostics shouldn't burn.
+   *
+   * Mono's edge accepts HEAD (verified empirically). Even a 405 from a
+   * future change would still mean "endpoint reachable" → status `up`;
+   * only 5xx maps to `degraded` and only network/timeout to `down`.
+   */
+  async healthCheck(): Promise<ResultT<HealthStatus, ProviderError>> {
+    const startedAt = performance.now();
+    try {
+      const response = await this.fetchImpl("https://api.monobank.ua/", {
+        method: "HEAD",
+        signal: AbortSignal.timeout(5000),
+      });
+      const latencyMs = Math.round(performance.now() - startedAt);
+      const status: HealthStatus["status"] = response.status >= 500 ? "degraded" : "up";
+      return Result.ok({ status, latencyMs, checkedAt: new Date() });
+    } catch {
+      const latencyMs = Math.round(performance.now() - startedAt);
+      return Result.ok({ status: "down", latencyMs, checkedAt: new Date() });
+    }
   }
 
   listInstitutions(country: ISOCountry): Promise<ResultT<readonly Institution[], ProviderError>> {

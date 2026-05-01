@@ -337,6 +337,24 @@ export type MappedAccountFromProvider = Omit<
 >;
 
 /**
+ * Live reachability snapshot of a provider's API surface. Returned by
+ * `BankingProvider.healthCheck()` and intended for monitoring,
+ * operational tooling, and retry-strategy decisions — never persisted
+ * (it's a point-in-time fact, not a historical record).
+ *
+ * Status mapping (from `healthCheck`):
+ *   - `up`       — API responded; HTTP < 500 (200 / 401 / 405 are all
+ *                  "endpoint reachable").
+ *   - `degraded` — API responded with 5xx (alive but having issues).
+ *   - `down`     — network error, DNS failure, or timeout.
+ */
+export interface HealthStatus {
+  readonly status: "up" | "degraded" | "down";
+  readonly latencyMs: number;
+  readonly checkedAt: Date;
+}
+
+/**
  * What `validateCredentials()` returns when the provider acknowledges
  * the credentials. `externalUserId` is provider-namespaced and never
  * leaks across providers; we use it for de-duplicating multiple
