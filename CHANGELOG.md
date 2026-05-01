@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Money exponent abstraction (`packages/domain/src/currency/exponents.ts`) —
+  preemptive foundation для non-2-decimal currencies. Existing call sites
+  не рефакторены, supported set без изменений (CZK/EUR/USD/GBP/PLN/CHF/UAH).
+  Tech Debt Backlog P1 #5.
+
 ### Verified — Phase 0 / Foundation closure (2026-04-29)
 
 - Web smoke at http://localhost:3000 — home page renders three
