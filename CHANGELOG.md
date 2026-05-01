@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   не рефакторены, supported set без изменений (CZK/EUR/USD/GBP/PLN/CHF/UAH).
   Tech Debt Backlog P1 #5.
 
+### Documented
+
+- Transaction `amount` / `fx_source_*` invariants documented in schema
+  (column comments + `transactions_fx_source_differs_from_booked` CHECK
+  constraint via migration 0010) and TypeScript interface (JSDoc on
+  `BankTransaction.amount`, `BankTransaction.exchange`, `ExchangeInfo`).
+  Tech Debt Backlog P1 #7.
+
 ### Verified — Phase 0 / Foundation closure (2026-04-29)
 
 - Web smoke at http://localhost:3000 — home page renders three

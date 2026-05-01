@@ -60,16 +60,23 @@ export type ClassificationSource =
   | "inherited"; // copied from a similar transaction
 
 /**
- * FX info attached to transactions where the booked amount currency
- * differs from the underlying account currency.
+ * FX info attached to transactions where the original transaction
+ * currency differs from the booked / account currency. Present ONLY in
+ * that case — when `BankTransaction.amount.currency` already equals the
+ * original currency, `ExchangeInfo` is `null`. This mirrors the DB-side
+ * invariant `fx_source_currency != currency_code` enforced by
+ * `transactions_fx_source_differs_from_booked` (migration 0010).
  *
  * `rate` is stored as a string to avoid binary-float precision loss
  * (Postgres `numeric(20, 10)`). Arithmetic goes through decimal.js in
  * the edge layer; the domain layer carries no math deps (ADR 0004).
  */
 export interface ExchangeInfo {
+  /** Original amount in `sourceCurrency`, signed minor units. */
   readonly sourceAmount: bigint;
+  /** Currency the original transaction was denominated in. MUST differ from the booked `BankTransaction.amount.currency`. */
   readonly sourceCurrency: ISOCurrency;
+  /** Booking-time exchange rate as a numeric string (`numeric(20, 10)` in DB). */
   readonly rate: string;
 }
 
@@ -93,10 +100,19 @@ export interface BankTransaction {
   readonly accountId: string | null; // null for manual entries
   readonly walletId: string;
 
-  // Money. Adapter: { value: row.amount, currency: row.currency_code }.
-  // DB stores those as separate columns + redundant `direction` enum for
-  // query convenience; the sign of `value` is authoritative (negative=debit,
-  // positive=credit), `direction` is a denormalized echo for indexes.
+  /**
+   * Booked amount. `amount.currency` ALWAYS equals the parent
+   * account's `currency_code` — that's the booking currency by
+   * definition. If the original transaction was in a different
+   * currency, the original amount + currency live on `exchange`
+   * (which is non-null in that case and only that case).
+   *
+   * Adapter mapping: `{ value: row.amount, currency: row.currency_code }`.
+   * DB stores the columns separately plus a redundant `direction`
+   * enum for query convenience; the sign of `value` is authoritative
+   * (negative=debit, positive=credit), `direction` is a denormalized
+   * echo used by indexes.
+   */
   readonly amount: Money;
   readonly bookedAt: Date;
   readonly valueAt: Date;
@@ -117,7 +133,14 @@ export interface BankTransaction {
   readonly kind: TransactionKind;
   readonly direction: TransactionDirection;
 
-  // FX
+  /**
+   * FX info if and only if the original transaction currency differs
+   * from `amount.currency`. Null when the transaction was originally
+   * denominated in the account's currency. The DB enforces the
+   * "differs" half via the `transactions_fx_source_differs_from_booked`
+   * CHECK constraint (migration 0010); the domain side enforces the
+   * "if and only if" via this nullable shape.
+   */
   readonly exchange: ExchangeInfo | null;
 
   // Linking
