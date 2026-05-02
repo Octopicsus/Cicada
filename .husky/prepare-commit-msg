@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# Strip AI co-author trailers and "Generated with ..." signatures from commit
+# messages before they're recorded. Belt-and-suspenders alongside the
+# 2026-05-02 history rewrite — prevents accidental re-introduction.
+#
+# Patterns removed (case-insensitive on the AI name):
+#   Co-authored-by: ... Claude ...
+#   🤖 ... Claude ...
+#   Generated with ... Claude ...
+#
+# $1 is the path to the commit message file (always set by git for this hook).
+
+MSG_FILE="$1"
+
+# macOS / BSD sed needs an empty arg after -i; GNU sed (Linux/CI) doesn't.
+# Detect and use the right form.
+if sed --version >/dev/null 2>&1; then
+  SED_INPLACE="sed -i"
+else
+  SED_INPLACE="sed -i ''"
+fi
+
+$SED_INPLACE -E '/^[Cc]o-[Aa]uthored-[Bb]y:.*[Cc]laude/d' "$MSG_FILE"
+$SED_INPLACE -E '/^🤖.*[Cc]laude/d' "$MSG_FILE"
+$SED_INPLACE -E '/^[Gg]enerated with.*[Cc]laude/d' "$MSG_FILE"
