@@ -27,6 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `computeInternalDedupeKey` helper in `@cicada/domain`
+  (`packages/domain/src/transactions/dedupe.ts`) for cross-provider
+  transaction dedup within a single wallet. SHA-256 over
+  `walletId | amount | currencyCode | bookedAtISO | merchantPart`.
+  Manual entries (no `accountId` / `provider` / `externalId`) skip dedup
+  by default per P0 #4 option (a) — heuristic dedup would false-positive
+  on legitimate identical concurrent manual entries (e.g. two spouses
+  adding €3 coffee at the same time). Persistence-side wiring deferred
+  to Phase 2 sync workflow. Tech Debt Backlog P0 #4 (helpers-only closure).
 - Money exponent abstraction (`packages/domain/src/currency/exponents.ts`) —
   preemptive foundation для non-2-decimal currencies. Existing call sites
   не рефакторены, supported set без изменений (CZK/EUR/USD/GBP/PLN/CHF/UAH).
