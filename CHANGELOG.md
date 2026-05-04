@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Argon2id invite-token helpers added in `@cicada/domain`
+  (`generateInviteToken`, `hashInviteToken`, `verifyInviteToken`).
+  OWASP 2024 params (m=19 MiB, t=2, p=1). DB persistence side
+  deferred until `shared_wallet_invites` table lands (Phase 2 feature
+  work) — schema MUST store `token_hash text not null` only, never a
+  plaintext column. Tech Debt Backlog P0 #2 (helpers-only closure).
 - Banking credentials now encrypted at rest via pgcrypto / `pgp_sym_encrypt`.
   Migration 0011 adds two SQL helpers (`encrypt_bank_credentials`,
   `decrypt_bank_credentials`) restricted to `service_role`; a new

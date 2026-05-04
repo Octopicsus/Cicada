@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cicada/shared": "workspace:*"
+    "@cicada/shared": "workspace:*",
+    "argon2": "^0.44.0"
   },
   "devDependencies": {
     "@types/node": "^22"
