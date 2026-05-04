@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- Banking credentials now encrypted at rest via pgcrypto / `pgp_sym_encrypt`.
+  Migration 0011 adds two SQL helpers (`encrypt_bank_credentials`,
+  `decrypt_bank_credentials`) restricted to `service_role`; a new
+  `BANK_CREDENTIALS_KEY` env var (32-byte base64) feeds the symmetric key
+  through parameterized RPC so it never lands in DB rows, postgres
+  config, or `pg_stat_statements`. `persistMonoConnection` encrypts the
+  Mono X-Token before insert; `bank_connections.encrypted_credentials`
+  is now populated (was `NULL` on every row prior to this change).
+  Tech Debt Backlog P0 #1.
+
 ### Added
 
 - Money exponent abstraction (`packages/domain/src/currency/exponents.ts`) —

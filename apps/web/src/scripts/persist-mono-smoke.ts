@@ -20,13 +20,14 @@
  *   - MONOBANK_TOKEN
  *   - NEXT_PUBLIC_SUPABASE_URL
  *   - SUPABASE_SERVICE_ROLE_KEY
+ *   - BANK_CREDENTIALS_KEY  (added 2026-05-04 / P0 #1; pgp_sym key)
  *
  * Exit codes:
- *   0 — validate + persist + verify all OK
+ *   0 — validate + persist + verify all OK (incl. credentials round-trip)
  *   1 — usage error (missing env var)
  *   2 — adapter validation failed (Mono rejected token)
- *   3 — persistence failed (DB insert error)
- *   4 — verify failed (queried back, found mismatch)
+ *   3 — persistence failed (DB insert error or encrypt failure)
+ *   4 — verify failed (queried back, found mismatch / decrypt round-trip mismatch)
  *   5 — uncaught runtime exception
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -35,6 +36,7 @@ import type { Database } from "@cicada/db";
 import { MonobankProvider } from "@cicada/domain";
 import { Result } from "@cicada/shared";
 
+import { decryptBankCredentials } from "../lib/banking/credentials";
 import { persistMonoConnection } from "../lib/banking/persist-mono-connection";
 
 const TEST_USER_EMAIL = "phase1-step2-smoke@cicada.local";
@@ -113,10 +115,11 @@ async function main(): Promise<void> {
   const token = process.env.MONOBANK_TOKEN;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const bankCredentialsKey = process.env.BANK_CREDENTIALS_KEY;
 
-  if (!token || !supabaseUrl || !serviceRoleKey) {
+  if (!token || !supabaseUrl || !serviceRoleKey || !bankCredentialsKey) {
     console.error(
-      "Missing env. Required: MONOBANK_TOKEN, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.",
+      "Missing env. Required: MONOBANK_TOKEN, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, BANK_CREDENTIALS_KEY.",
     );
     process.exit(1);
   }
@@ -149,11 +152,12 @@ async function main(): Promise<void> {
     accountsCount: accounts?.length ?? 0,
   });
 
-  // 3. Persist.
+  // 3. Persist (encrypts the X-Token via the SQL helper before insert).
   const persistResult = await persistMonoConnection(db, {
     userId,
     walletId,
     clientInfo: validateResult.value,
+    token,
   });
   if (Result.isErr(persistResult)) {
     console.error("FAIL persist:", persistResult.error.message);
@@ -193,7 +197,44 @@ async function main(): Promise<void> {
     process.exit(4);
   }
 
+  // 4b. Credentials round-trip — read encrypted blob, decrypt, compare.
+  const { data: credRow, error: credError } = await db
+    .from("bank_connections")
+    .select("encrypted_credentials")
+    .eq("id", persistResult.value.connectionId)
+    .single();
+
+  if (credError || !credRow?.encrypted_credentials) {
+    console.error(
+      "FAIL verify credentials: row missing or null encrypted_credentials —",
+      credError?.message ?? "no blob",
+    );
+    process.exit(4);
+  }
+
+  let decrypted: string;
+  try {
+    decrypted = await decryptBankCredentials(db, credRow.encrypted_credentials);
+  } catch (cause) {
+    console.error(
+      "FAIL verify credentials: decrypt threw —",
+      cause instanceof Error ? cause.message : String(cause),
+    );
+    process.exit(4);
+  }
+
+  if (decrypted !== token) {
+    // NEVER print the actual values — just the lengths and a yes/no.
+    console.error(
+      `FAIL verify credentials: decrypted plaintext does not match original token (length: stored=${String(decrypted.length)}, original=${String(token.length)}).`,
+    );
+    process.exit(4);
+  }
+
   console.log("OK verify:");
+  console.log(
+    `  Credentials: encrypted blob ${String(credRow.encrypted_credentials.length)} chars (hex), decrypt round-trip matches original token`,
+  );
   console.log("  Connection:", {
     id: connection.id,
     provider: connection.provider,

@@ -784,6 +784,14 @@ export type Database = {
       };
     };
     Functions: {
+      decrypt_bank_credentials: {
+        Args: { ciphertext: string; key: string };
+        Returns: string;
+      };
+      encrypt_bank_credentials: {
+        Args: { key: string; plaintext: string };
+        Returns: string;
+      };
       uuid_v7: { Args: never; Returns: string };
     };
     Enums: {

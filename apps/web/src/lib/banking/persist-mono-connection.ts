@@ -7,6 +7,8 @@ import type { Database } from "@cicada/db";
 import type { ClientInfo } from "@cicada/domain";
 import { Result, type Result as ResultT } from "@cicada/shared";
 
+import { encryptBankCredentials } from "./credentials";
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -29,6 +31,15 @@ export interface PersistMonoInput {
   readonly userId: string;
   readonly walletId: string;
   readonly clientInfo: ClientInfo;
+  /**
+   * The plaintext credential the caller used to obtain `clientInfo` —
+   * for Monobank that's the user's `X-Token`. Encrypted via the
+   * `encrypt_bank_credentials` RPC (migration 0011) before persisting
+   * to `bank_connections.encrypted_credentials`. Never logged, never
+   * leaked outside this function. Required as of P0 #1
+   * (closes the unencrypted-tokens-in-DB security gap).
+   */
+  readonly token: string;
 }
 
 export interface PersistMonoOutput {
@@ -40,7 +51,7 @@ export async function persistMonoConnection(
   db: SupabaseClient<Database>,
   input: PersistMonoInput,
 ): Promise<ResultT<PersistMonoOutput, Error>> {
-  const { userId, walletId, clientInfo } = input;
+  const { userId, walletId, clientInfo, token } = input;
 
   if (clientInfo.providerKey !== "monobank") {
     return Result.err(
@@ -53,7 +64,25 @@ export async function persistMonoConnection(
     return Result.err(new Error("persistMonoConnection: ClientInfo carries no accounts"));
   }
 
-  // 1. Insert the connection row first; the accounts FK references it.
+  // 1a. Encrypt the token via the SQL helper (migration 0011). The key
+  //     comes from BANK_CREDENTIALS_KEY in env; we never store or log
+  //     either the plaintext or the key. PostgREST returns the bytea
+  //     ciphertext as a hex string `\x...` which supabase-js can pass
+  //     straight back into a bytea-typed column on the next insert.
+  let encryptedCredentials: string;
+  try {
+    encryptedCredentials = await encryptBankCredentials(db, token);
+  } catch (cause) {
+    return Result.err(
+      new Error(
+        `persistMonoConnection: failed to encrypt credentials: ${
+          cause instanceof Error ? cause.message : String(cause)
+        }`,
+      ),
+    );
+  }
+
+  // 1b. Insert the connection row first; the accounts FK references it.
   const { data: connection, error: connectionError } = await db
     .from("bank_connections")
     .insert({
@@ -63,7 +92,7 @@ export async function persistMonoConnection(
       institution_id: "monobank:UA",
       institution_name: "Monobank",
       status: "connected",
-      // encrypted_credentials: NULL — encryption deferred. Re-paste on reconnect.
+      encrypted_credentials: encryptedCredentials,
     })
     .select("id")
     .single();
