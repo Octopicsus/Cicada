@@ -27,6 +27,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `findRateAsOf` helper in `@cicada/domain`
+  (`packages/domain/src/currency/rates.ts`) for FX rate lookup with
+  automatic weekend / holiday rollback. Strategy: `WHERE date <= asOf ORDER BY date DESC LIMIT 1`,
+  bounded by `maxLookbackDays` default 14. ECB does not publish rates on
+  Saturdays, Sundays, or TARGET2 holidays — strict-equality lookup would
+  return NULL for weekend / holiday transactions and break the
+  `fx_rate IS NOT NULL when fx_source_currency != currency_code` invariant
+  on `transactions`. Returns `Result<RateResult, FxLookupError>` with
+  `isStale` / `daysStale` flags for UI hints; same-currency case
+  short-circuits without DB hit. Index `idx_exchange_rates_lookup`
+  (migration 0006) already supports the rollback query plan — no schema
+  change. Persistence-side wiring deferred to first FX-needing consumer
+  (Phase 2 transaction import / classifier / dashboard aggregation).
+  Tech Debt Backlog P0 #3 (helpers-only closure).
 - `computeInternalDedupeKey` helper in `@cicada/domain`
   (`packages/domain/src/transactions/dedupe.ts`) for cross-provider
   transaction dedup within a single wallet. SHA-256 over
