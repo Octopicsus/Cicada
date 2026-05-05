@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Migration `20260505071023_security_advisors_fixes` — fixes RLS bypass on
+  `bank_connections_safe` view (`security_invoker = true`), locks
+  `search_path = ''` on all 5 public functions
+  (`encrypt_bank_credentials`, `decrypt_bank_credentials`, `uuid_v7`,
+  `update_updated_at`, `on_auth_user_created`), revokes EXECUTE on the
+  two trigger handlers from `PUBLIC` / `anon` / `authenticated`. Fixes
+  advisor issues (1 ERROR + 7 WARN) shipped in P0 #1 (commit `eb831bf`),
+  surfaced 2026-05-05 via `get_advisors` MCP tool at production setup
+  pre-flight. См. Tech Debt Backlog P0 #5.
 - Argon2id invite-token helpers added in `@cicada/domain`
   (`generateInviteToken`, `hashInviteToken`, `verifyInviteToken`).
   OWASP 2024 params (m=19 MiB, t=2, p=1). DB persistence side
