@@ -34,6 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is now populated (was `NULL` on every row prior to this change).
   Tech Debt Backlog P0 #1.
 
+### Changed
+
+- `users.region` теперь nullable; добавлено `users.language` (ISO 639-1).
+  Maximally flexible defaults: NULL region → app uses generic non-country-specific
+  defaults; NULL language → English UI fallback. Earlier opinionated 'cz' default
+  removed from on_auth_user_created trigger. Migration
+  `20260505154613_users_neutral_defaults` preserves trigger's `SECURITY DEFINER` +
+  `SET search_path = ''` from P0 #5. Applied к dev (`cuydsbtsilfppalfiguz`) и prod
+  (`qwjjiadnpacerbajkmhj`); advisors clean на обоих. P1 #6 closure
+  (Tech Debt Backlog).
+
 ### Added
 
 - `findRateAsOf` helper in `@cicada/domain`
